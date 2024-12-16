@@ -1,24 +1,16 @@
 import requests
 import json
 
-class LlamaAPI:
-    def __init__(self):
-        self.url = "https://api.lamellabs.com/v2/summarize"
+def generate_response(prompt):
+    url = 'http://localhost:11434/api/generate'
+    data = {'model': 'llama3.2', 'prompt': prompt, 'stream': False}
+    response = requests.post(url, json=data)
 
-    def summarize_text(self, text):
-        headers = {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer YOUR_API_TOKEN'
-        }
-
-        data = json.dumps({
-            'text': text
-        })
-
-        response = requests.post(self.url, headers=headers, data=data)
-
-        return response.json()
-
+    if response.status_code == 200:
+        return response.json().get('response')
+    else:
+        raise Exception(f'Error {response.status_code}: {response.text}')
+    
 def parse_rss_feeds(rss_feeds):
     aggregated_data = {}
 
@@ -39,8 +31,7 @@ def parse_rss_feeds(rss_feeds):
 
 def main():
     rss_feeds = [
-        {'url': 'https://example.com/rss1'},
-        {'url': 'https://example.com/rss2'},
+        {'url': 'https://feeds.feedburner.com/TheHackersNews'},
         # Add more RSS feeds here
     ]
 
